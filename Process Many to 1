@@ -1,0 +1,277 @@
+Dim nwb, cwb As Workbook
+Dim nws, cws As Worksheet
+Dim cwsn As String
+Sub sort()
+'create a new workbook
+Set nwb = Workbooks.Add
+Dim Path, Name As String
+
+'setpath and file name fro the new workbook
+Path = "C:\Users\Timothy_Ko\Desktop\"
+Name = "Monthly job Reminder"
+
+nwb.SaveAs filename:=Path + Name + ".xlsx"
+
+Set cwb = ThisWorkbook
+
+Dim deadline As Date
+deadline = InputBox("Please Enter the month(mm/yyyy):")
+
+For Each ws In cwb.Worksheets
+    'copy name from old workbook to new(sorted)
+    '** don't use Sheet1 as old workbook name as it will fail
+    cwsn = ws.Name
+    Set nws = nwb.Worksheets.Add
+    nws.Name = cwsn
+    
+    'copy the new topic row at the new row
+    ws.Range("B1:AU1").Copy
+    nws.Range("B1:AU1").PasteSpecial Paste:=xlPasteAll
+    
+    'set rows height and width
+    Dim rowheight As Double
+    rowheight = ws.Range("A1").EntireRow.Height
+    nws.Range("A1").rowheight = rowheight
+    
+    Dim values(1 To 100) As Double
+    Dim i As Integer
+    i = 1
+    For Each cell In ws.Range("A1:AU1").Cells
+        values(i) = CDbl(cell.ColumnWidth)
+        i = i + 1
+    Next cell
+    i = 1
+    For Each cell In nws.Range("A1:AU1").Cells
+        cell.ColumnWidth = values(i)
+        i = i + 1
+    Next cell
+
+    Dim lowerdline As Date
+    lowerdline = DateAdd("d", 30, deadline)
+    'get date from row and decide what row to copy
+    Dim lastRow, nlastrow As Integer
+    lastRow = ws.Range("A" & Rows.Count).End(xlUp).row + 1
+    nlastrow = 2
+    For i = 2 To lastRow
+        If ws.Range("V" & i).Value >= deadline And ws.Range("V" & i).Value <= lowerdline And ws.Range("H" & i).Value = "In Use" Then
+            ws.Range("B" & i & ":" & "AU" & i).Copy
+            nws.Range("B" & nlastrow & ":" & "AU" & nlastrow).PasteSpecial Paste:=xlPasteAll
+            nlastrow = nlastrow + 1
+        End If
+    Next i
+    'color variation
+    'Set Internal_inuse = RGB(255, 255, 255)
+    'Set External_inuse = RGB(255, 255, 0)
+    'Set withdraw = RGB(0, 176, 240)
+    'Set Write_off = RGB(0, 0, 0)
+    'Set Awaiting_calibration = RGB(255, 192, 0)
+    
+    
+    'solve special case
+    For i = 2 To nlastrow - 1
+        'point cal, full cal problem
+        If nws.Range("V" & i).Value = nws.Range("S" & i).Value And nws.Range("Q" & i).Value - nws.Range("V" & i).Value < 30 Then
+            If nws.Range("U" & i).Value = "" Then
+                nws.Range("U" & i).Value = "Full Calibration"
+            ElseIf nws.Range("U" & i).Value <> "" Then
+                nws.Range("U" & i).Value = nws.Range("U" & i).Value + "Full Calibration"
+            'remark full cal
+            End If
+        End If
+        'external color change
+        If nws.Range("M" & i).Value = "External" Then
+            nws.Range("B" & i & ":" & "AU" & i).Interior.Color = RGB(255, 255, 0)
+        ElseIf nws.Range("M" & i).Value = "Internal" Then
+        Else
+            Dim temp() As String
+            Dim j As Variant
+            temp = Split(nws.Range("M" & i).Value, "/")
+            For Each j In temp
+                If j = "External" Then
+                    nws.Range("B" & i & ":" & "AU" & i).Interior.Color = RGB(255, 255, 0)
+                End If
+            Next j
+        End If
+    Next i
+    
+    'sorting in new ws
+    Dim sorting_range As Range
+    Set sorting_range = Range("A1:AU" & nlastrow)
+    nws.sort.SortFields.Clear
+    nws.sort.SortFields.Add Key:=Range("M1:M" & nlastrow), _
+        SortOn:=xlSortOnValues, _
+        Order:=xlAscending, _
+        DataOption:=xlSortTextAsNumbers
+        
+    nws.sort.SortFields.Add Key:=Range("V1:V" & nlastrow), _
+        SortOn:=xlSortOnValues, _
+        Order:=xlAscending, _
+        DataOption:=xlSortNormal
+
+    With nws.sort
+        .SetRange Range("A1:AU" & nlastrow)
+        .Header = xlYes
+        .MatchCase = False
+        .Orientation = xlTopToBottom
+        .SortMethod = xlPinYin
+        .Apply
+    End With
+    
+    'from all data from to email form
+    'copy affcted data
+    
+    nws.Range("Y1").Copy
+    nws.Range("AV1").PasteSpecial Paste:=xlPasteAll
+    nws.Range("AV1").Value = nws.Range("AV1").Value + "(1/0)"
+    
+    nws.Range("Q1").Copy
+    nws.Range("AW1").PasteSpecial Paste:=xlPasteAll
+    
+    nws.Range("U1").Copy
+    nws.Range("AX1").PasteSpecial Paste:=xlPasteAll
+    
+    For i = 2 To nlastrow - 1
+        'add boarder
+        nws.Range("AV" & i).BorderAround LineStyle:=xlContinuous, Weight:=xlThin, Color:=vbBlack
+        nws.Range("AW" & i).BorderAround LineStyle:=xlContinuous, Weight:=xlThin, Color:=vbBlack
+        nws.Range("AX" & i).BorderAround LineStyle:=xlContinuous, Weight:=xlThin, Color:=vbBlack
+        If nws.Range("Y" & i).Value = "Y" Then
+            nws.Range("AV" & i).Value = 1
+        ElseIf nws.Range("Y" & i).Value = "N" Then
+            nws.Range("AV" & i).Value = 0
+        End If
+        nws.Range("AW" & i).Value = CDate(nws.Range("V" & i).Value)
+        nws.Range("AX" & i).Value = nws.Range("U" & i)
+    Next i
+    
+    'delete unwanted colume of data
+    nws.Range("C:C,H:H,I:I,K:K,L:L").Delete
+    nws.Columns("I:AP").Delete
+    
+    'remark adjustment
+    For i = 2 To nlastrow
+        If (nws.Range("K" & i).Value) <> "Full Calibration" Then
+            nws.Range("K" & i).Value = ""
+        End If
+    Next i
+    
+    'add new rows
+    nws.Rows("1:7").Insert
+    
+    'Formate for email form
+    With nws.Range("A1:K1").Borders(xlEdgeBottom)
+        .LineStyle = xlContinuous
+        .Weight = xlThin
+        .ColorIndex = vbBlack
+    End With
+
+    With nws.Range("J4:K4").Borders(xlEdgeBottom)
+        .LineStyle = xlContinuous
+        .Weight = xlThin
+        .ColorIndex = vbBlack
+    End With
+    
+    With nws.Range("J6:K6").Borders(xlEdgeBottom)
+        .LineStyle = xlContinuous
+        .Weight = xlThin
+        .ColorIndex = vbBlack
+    End With
+    
+    nws.Range("A1").rowheight = 55.5
+    nws.Range("A3").rowheight = 19.5
+    
+    nws.Range("D1:G1").Merge
+    nws.Range("J4:K4").Merge
+    nws.Range("J6:K6").Merge
+    nws.Range("G6:I6").Merge
+    
+    Dim Lab_name As String
+    
+    Lab_name = ws.Name
+    If Lab_name = "CO" Then
+        Lab_name = "Concrete"
+    ElseIf Lab_name = "AG" Then
+        Lab_name = "Aggregate"
+    ElseIf Lab_name = "SO" Then
+        Lab_name = "Soil"
+    ElseIf Lab_name = "Lab D - SO" Then
+        Lab_name = "Lab D - Soil"
+    ElseIf Lab_name = "AS" Then
+        Lab_name = "Asphalt"
+    ElseIf Lab_name = "Special" Then
+        Lab_name = "Special"
+    ElseIf Lab_name = "ST" Then
+        Lab_name = "Steel"
+    ElseIf Lab_name = "RE" Then
+        Lab_name = "Calibration"
+    ElseIf Lab_name = "CH" Then
+        Lab_name = "Chemical"
+    ElseIf Lab_name = "ND" Then
+        Lab_name = "NDT"
+    ElseIf Lab_name = "AB" Then
+        Lab_name = "Asbestos"
+    ElseIf Lab_name = "HE" Then
+        Lab_name = "HEPA"
+    ElseIf Lab_name = "(3rs)SO & AG" Then
+        Lab_name = "(3 Runway) Soil & Aggregate"
+    ElseIf Lab_name = "(3rs)CO & CE" Then
+        Lab_name = "(3 Runway) Concrete & Cement"
+    ElseIf Lab_name = "(3rs)AS" Then
+        Lab_name = "(3 Runway)Asphalt"
+    ElseIf Lab_name = "(3rs)ST" Then
+        Lab_name = "(3 Runway)Steel"
+    ElseIf Lab_name = "(3rs)Oven Room" Then
+        Lab_name = "(3 Runway)Workshop & Oven Room"
+    End If
+    
+    
+    nws.Range("D1").Value = "The Lab(Asia) Ltd."
+    nws.Range("B3").Value = "EQUIPMENT CALIBRATION REMINDER"
+    nws.Range("B5").Value = "Department:" & Lab_name & " Laboratory"
+    nws.Range("B7").Value = "Equipment Details"
+    
+    nws.Range("I4").Value = "Issued By:"
+    nws.Range("J4").Value = "Valerie KOH"
+    
+    nws.Range("G6").Value = "Job Reminder Issued Date:"
+    nws.Range("J6").Value = Format(Now(), "mm/dd/yyyy")
+    
+    nws.Range("B7").Font.Underline = xlUnderlineStyleSingle
+    
+    nws.Range("D1").Font.Bold = True
+    nws.Range("B3").Font.Bold = True
+    nws.Range("B5").Font.Bold = True
+    nws.Range("B7").Font.Bold = True
+    nws.Range("J6").Font.Bold = True
+    
+    nws.Range("D1").Font.Size = 26
+    nws.Range("B3").Font.Size = 16
+    nws.Range("B5").Font.Size = 12
+    nws.Range("B7").Font.Size = 12
+    
+    nws.Range("G6").HorizontalAlignment = xlRight
+    nws.Range("J4:K6").HorizontalAlignment = xlCenter
+    nws.Range("H9:j" & nlastrow).HorizontalAlignment = xlCenter
+    nws.Range("B8:K8").HorizontalAlignment = xlCenter
+    nws.Range("B8:K8").VerticalAlignment = xlCenter
+    
+    Dim shaperange As Range
+    
+    Set shaperange = Range("B1")
+    
+    nws.Pictures.Insert("C:\Users\Timothy_Ko\Downloads\testing.png").Select
+    
+    With Selection
+        With .shaperange
+            .LockAspectRatio = msoTrue
+            .width = 25
+            .Height = 50
+        End With
+    .Left = shaperange.Left
+    .Top = shaperange.Top
+    .Placement = 1
+    .PrintObject = True
+    End With
+    
+Next ws
+End Sub
