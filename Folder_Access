@@ -20,7 +20,116 @@ End Function
 Private Sub Exportbutton_Click()
     TextBox5.Value = GetFolder()
 End Sub
-
 Private Sub Inportbutton_Click()
     TextBox4.Value = GetFolder()
+End Sub
+
+#main code
+Private Sub Summit_button_Click()
+    Dim source_path As String
+    Dim destant_path As String
+    
+    source_path = CStr(TextBox4.Value)
+    destant_path = CStr(TextBox5.Value)
+
+    TextBox5.Value = ""
+    TextBox4.Value = ""
+    
+    UserForm1.Hide
+    source_path = source_path + "\"
+    destant_path = destant_path + "\"
+    
+    Dim pathtest As String
+    Dim mainbook As Workbook
+    Dim sheet As Worksheet
+    
+    Set mainbook = Application.ActiveWorkbook
+    Dim i, j, k As Integer
+    i = 1
+    'scan file for name
+    Dim file_name(100) As String
+    'get source_path need end with
+
+    Dim fso As FileSystemObject
+    Dim myfile As file
+    Dim myfolder As Folder
+    
+    Set fso = New Scripting.FileSystemObject
+    Set myfolder = fso.GetFolder(source_path)
+    For Each myfile In myfolder.Files
+        If Right(myfile.Name, 5) = ".xlsx" Or Right(myfile.Name, 5) = ".xlsm" Then
+            file_name(i) = myfile.Name
+            i = i + 1
+        End If
+    Next myfile
+    
+    'put filename to a list
+    k = 2
+    For j = 1 To i
+        pathtest = source_path & file_name(j)
+        On Error Resume Next
+        Workbooks.Open (pathtest)
+        Workbooks(j + 1).Activate
+        Dim sblastrow As Integer
+        For Each sheet In Workbooks(j + 1).Worksheets
+            If sheet.Name = "CSV" Then
+                'expand all colum
+                sheet.Columns.EntireColumn.Hidden = False
+                sheet.Rows.EntireRow.Hidden = False
+                
+                Columns("A:BZ").AutoFit
+                'expand all rows
+                sblastrow = sheet.Range("A" & Rows.Count).End(xlUp).Row + 1
+                'sheet.Rows("1:" & sblastrow).RowHeight = 30
+                sheet.Copy after:=mainbook.Sheets(mainbook.Worksheets.Count)
+            End If
+        Next sheet
+        Application.DisplayAlerts = False
+        Workbooks(j + 1).Save
+        Workbooks(j + 1).Close
+        Application.DisplayAlerts = True
+        'rename mainbook name
+        ThisWorkbook.Sheets(k).Name = "CSV(" & k - 1 & ")"
+        k = k + 1
+    Next j
+    
+    'Combine as one sheet
+    Sheets.Add(Before:=Sheets("Sheet1")).Name = "CSV_Combine"
+    Application.DisplayAlerts = False
+    Sheets("Sheet1").Delete
+    Application.DisplayAlerts = True
+    
+    Dim lastrow As Integer
+    
+    For Each sheet In mainbook.Worksheets
+        lastrow = Sheets("CSV_Combine").Range("A" & Rows.Count).End(xlUp).Row
+        If sheet.Name = "CSV_Combine" Then
+            'setup top row
+            Sheets("CSV(1)").Range("A1:BT1").Copy
+            Sheets("CSV_Combine").Range("A1:BT1").PasteSpecial
+        Else
+            'copydata
+            
+            Sheets("CSV_Combine").Range("A" & lastrow + 1 & ":BT" & lastrow + 3).Value = sheet.Range("A2:BT4").Value
+        End If
+    Next sheet
+    
+    Sheets("CSV_Combine").Range("A" & lastrow + 1 & ":BT" & lastrow + 3).AutoFit
+    'export as .csv
+    Dim Path As String
+    Dim ws As Worksheet
+    
+    Application.ScreenUpdating = False
+    Path = destant_path
+    For Each ws In Worksheets
+        If ws.Name = "CSV_Combine" Then
+            ws.Copy
+            ActiveWorkbook.SaveAs Filename:=Path _
+            & "<3 chars LAB ID>" & "_AGGREGATE_V110_" & CStr(Format(Date, "yyyymmdd")) & ".csv", FileFormat:=xlCSVUTF8, _
+            CreateBackup:=True
+            ActiveWorkbook.Close False
+        End If
+    Next
+    Application.ScreenUpdating = True
+    
 End Sub
