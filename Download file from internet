@@ -1,0 +1,204 @@
+Sub get_folder()
+
+Private Declare PtrSafe Function URLDownloadToFile Lib "urlmon" Alias "URLDownloadToFileA" (ByVal pCaller As Long, _
+    ByVal szURL As String, ByVal szFileName As String, ByVal dwReserved As Long, ByVal lpfnCB As Long) As Long
+
+Function DownloadFileFromWeb(strURL As String, strSavePath As String) As Long
+    'strSavePath includes filename
+    DownloadFileFromWeb = URLDownloadToFile(0, strURL, strSavePath, 0, 0)
+End Function
+
+Call DownloadFileFromWeb(SGS_path & "Equipment Master Programme (Concrete).xlsx", dowload_path & "CO.xlsx")    'CO'
+'------------------------^^^dowload from web^^^-------------------------------------
+Set tempFile = Application.FileDialog(msoFileDialogFilePicker)
+
+tempFile.AllowMultiSelect = True
+FilesSelected = tempFile.Show
+
+For i = 1 To tempFile.SelectedItems.Count
+    Workbooks.Open tempFile.SelectedItems(i)
+Next i
+'------------------------^^^self download and self select^^^-------------------------------------
+Dim pathtest(17) As String
+pathtest(1) = dowload_path & "Equipment Master Programme (Concrete).xlsx"    'CO'
+
+For i = 1 To 17
+    Workbooks.Open (pathtest(i))
+Next i
+'------------------------^^^self download and auto select^^^-------------------------------------
+
+'Sub Winhttptest()
+'
+'Dim http As New WinhttpRequest
+'dowload_path = "C:\Users\Timothy_Ko\Desktop\"
+'SGS_path = "https://sgs.sharepoint.com/sites/hk-it-hkfileserver/TLA_PDFCertificateRecord/Equipment Master Programme/"
+'
+'http.Open "GET", SGS_path & "Equipment Master Programme (Concrete).xlsx", True
+'http.send
+'If http.Status = 200 Then
+'    With CreateObject("ADODB.STream")
+'        .Open
+'        .Type = 1
+'        .write http.responseBody
+'        .SaveToFile dowload_path & "CO.xlsx", 2 '2 = overwrite file
+'    .Close
+'    End With
+'End If
+'End Sub
+'Sub objhttptest()
+'    Const MYURL = "https://sgs.sharepoint.com/sites/hk-it-hkfileserver/TLA_PDFCertificateRecord/Equipment Master Programme/Equipment Master Programme (Concrete).xlsx"
+'    Set objHTTP = CreateObject("WinHttp.WinHttpRequest.5.1")
+'    objHTTP.Open "GET", MYURL, False
+'
+'    objHTTP.send
+'
+'    Set oStream = CreateObject("ADODB.Stream")
+'    oStream.Open
+'    oStream.Type = 1
+'    oStream.write objHTTP.responseBody
+'    oStream.SaveToFile (Environ("TEMP") & ".xlsx")
+'    oStream.Close
+'
+'    Workbooks.Open Environ("TEMP") & ".xlsx"
+'
+'End Sub
+End Sub
+-----------------------------------------------
+Sub Mounthly_download_without_sorting()
+Dim i As Integer
+    If ThisWorkbook.Worksheets(1).Name <> "Sheet1" Then
+        Sheets.Add(Before:=Sheets(1)).Name = "Sheet1"
+    End If
+    For i = 2 To Worksheets.Count
+        Application.DisplayAlerts = False
+        Sheets(i).Delete
+        Application.DisplayAlerts = True
+    Next i
+    
+    Dim dowload_path As String
+
+    dowload_path = "C:\Users\Timothy_Ko\Desktop\"
+
+    
+    Dim MainBook, sourceBook As Workbook
+    Dim Sheet As Worksheet
+    Dim sheetname() As String
+    Dim counter As Integer
+
+    Set MainBook = Application.ActiveWorkbook
+    Dim pathtest(17) As String
+    pathtest(1) = dowload_path & "Equipment Master Programme (Concrete).xlsx"    'CO'
+    pathtest(2) = dowload_path & "Equipment Master Programme (Aggregate).xlsx"    'AG'
+    pathtest(3) = dowload_path & "Equipment Master Programme (Soil).xlsx"    'SO'
+    pathtest(4) = dowload_path & "Equipment Master Programme (Soil - Lab D).xlsx"   'LAB D-SO'
+    pathtest(5) = dowload_path & "Equipment Master Programme (Asphalt).xlsx"    'AS'
+    pathtest(6) = dowload_path & "Equipment Master Programme (Special).xlsx"    'Special'
+    pathtest(7) = dowload_path & "Equipment Master Programme (Steel).xlsx"    'ST'
+    pathtest(8) = dowload_path & "Equipment Master Programme (Reference Equipment).xlsx"    'RE'
+    pathtest(9) = dowload_path & "Equipment Master Programme (Chemical).xlsx"    'CH'
+    pathtest(10) = dowload_path & "Equipment Master Programme (NDT).xlsx"   'ND'
+    pathtest(11) = dowload_path & "Equipment Master Programme (Asbestos).xlsx"   'AB
+    pathtest(12) = dowload_path & "Equipment Master Programme (HEPA).xlsx"   'HE'
+    pathtest(13) = dowload_path & "Equipment Master Programme AA-EQ-100 to 199 (Airport - Soil and Aggregate).xlsx"       '(3rs)So & AG
+    pathtest(14) = dowload_path & "Equipment Master Programme AA-EQ-400 to 999 (Airport - Concrete and Cement).xlsx"       '(3rs)CO & CE
+    pathtest(15) = dowload_path & "Equipment Master Programme AA-EQ-300 to 399 (Airport - Asphalt).xlsx"            '(3rs)AS
+    pathtest(16) = dowload_path & "Equipment Master Programme AA-EQ-200 to 299 (Airport - Steel).xlsx"            '(3rs)ST
+    pathtest(17) = dowload_path & "Equipment Master Programme AA-EQ-001 to 099 (Airport - Workshop & Oven Room).xlsx"     '(3rs)Oven Room
+    
+    For i = 1 To 17
+        Workbooks.Open (pathtest(i))
+        counter = 1
+        Set sourceBook = ActiveWorkbook
+        For Each Sheet In sourceBook.Worksheets
+            'if there are more than one sheets at the sourcebook, please place the wanted one as the first worksheet and setup another or condition in the next line
+            If sourceBook.Name = "Equipment Master Programme (Asbestos).xlsx" Or sourceBook.Name = "Equipment Master Programme (Special).xlsx" Then
+                'loop count
+                If counter = 1 Then
+                    counter = 2
+                ElseIf counter <> 1 Then
+                    counter = 1
+                    GoTo Nextround
+                End If
+            End If
+            
+            If sourceBook.Name = "Equipment Master Programme (Concrete).xlsx" Then
+                Sheet.Name = "CO"
+            ElseIf sourceBook.Name = "Equipment Master Programme (Aggregate).xlsx" Then
+                Sheet.Name = "AG"
+            ElseIf sourceBook.Name = "Equipment Master Programme (Soil).xlsx" Then
+                Sheet.Name = "SO"
+            ElseIf sourceBook.Name = "Equipment Master Programme (Soil - Lab D).xlsx" Then
+                Sheet.Name = "LAB D-SO"
+            ElseIf sourceBook.Name = "Equipment Master Programme (Asphalt).xlsx" Then
+                Sheet.Name = "AS"
+            ElseIf sourceBook.Name = "Equipment Master Programme (Special).xlsx" Then
+                Sheet.Name = "Special"
+            ElseIf sourceBook.Name = "Equipment Master Programme (Steel).xlsx" Then
+                Sheet.Name = "ST"
+            ElseIf sourceBook.Name = "Equipment Master Programme (Reference Equipment).xlsx" Then
+                Sheet.Name = "RE"
+            ElseIf sourceBook.Name = "Equipment Master Programme (Chemical).xlsx" Then
+                Sheet.Name = "CH"
+            ElseIf sourceBook.Name = "Equipment Master Programme (NDT).xlsx" Then
+                Sheet.Name = "ND"
+            ElseIf sourceBook.Name = "Equipment Master Programme (Asbestos).xlsx" Then
+                Sheet.Name = "AB"
+            ElseIf sourceBook.Name = "Equipment Master Programme (HEPA).xlsx" Then
+                Sheet.Name = "HE"
+            ElseIf sourceBook.Name = "Equipment Master Programme AA-EQ-100 to 199 (Airport - Soil and Aggregate).xlsx" Then
+                Sheet.Name = "(3rs)So & AG"
+            ElseIf sourceBook.Name = "Equipment Master Programme AA-EQ-400 to 999 (Airport - Concrete and Cement).xlsx" Then
+                Sheet.Name = "(3rs)CO & CE"
+            ElseIf sourceBook.Name = "Equipment Master Programme AA-EQ-300 to 399 (Airport - Asphalt).xlsx" Then
+                Sheet.Name = "(3rs)AS"
+            ElseIf sourceBook.Name = "Equipment Master Programme AA-EQ-200 to 299 (Airport - Steel).xlsx" Then
+                Sheet.Name = "(3rs)ST"
+            ElseIf sourceBook.Name = "Equipment Master Programme AA-EQ-001 to 099 (Airport - Workshop & Oven Room).xlsx" Then
+                Sheet.Name = "(3rs)Oven Room"
+            Else
+                MsgBox ("Please check is this file name is programmed")
+                GoTo Nextround
+            End If
+            Sheet.Copy after:=MainBook.Sheets(MainBook.Worksheets.Count)
+        Next Sheet
+Nextround:
+        sourceBook.Save
+        sourceBook.Close
+    Next i
+    
+    Dim lastrow As Integer
+    Dim j As Integer
+    j = 1
+    Application.DisplayAlerts = False
+    Sheets.Add(Before:=Sheets(1)).Name = "temp"
+    For Each ws In MainBook.Worksheets
+        'clear filter
+        ws.Rows(1).Delete
+        lastrow = ws.Range("B" & Rows.Count).End(xlUp).Row
+    Next ws
+    Application.DisplayAlerts = True
+
+End Sub
+
+##PIC download
+
+    Dim shaperange As Range
+    
+    Set shaperange = Range("B1")
+    'change path link
+    nws.Pictures.Insert(dowload_path & Image_name).Select
+    
+    With Selection
+        With .shaperange
+            .LockAspectRatio = msoTrue
+            .Width = 25
+            .Height = 50
+        End With
+    .Left = shaperange.Left
+    .Top = shaperange.Top
+    .Placement = 1
+    .PrintObject = True
+    End With
+'------------------------^^^Pic^^^-------------------------------------
+
+End Sub
