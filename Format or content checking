@@ -1,0 +1,44 @@
+Sub check_format()
+
+Dim A(53) As String
+Dim i As Integer
+
+For i = 1 To 53
+    A(i) = CStr(Sheets("(501)").Cells(1, i).Value)
+Next i
+Dim cwb As Workbook
+Set cwb = ThisWorkbook
+For Each ws In cwb.Worksheets
+    For i = 1 To 53
+        If A(i) <> CStr(ws.Cells(1, i).Value) Then
+            MsgBox (ws.Name)
+            MsgBox (A(i))
+            MsgBox (CStr(ws.Cells(1, i).Value))
+            MsgBox (i)
+        End If
+    Next i
+Next ws
+
+End Sub
+############################
+Sub detail_check()
+Dim A(53) As String
+Dim i As Integer
+
+For i = 1 To 53
+    A(i) = CStr(Sheets("(501)").Cells(1, i).Value)
+Next i
+
+Dim cwb As Workbook
+Set cwb = ThisWorkbook
+For Each ws In cwb.Worksheets
+    If ws.Name = "(500)" Then
+        For i = 1 To 53
+            MsgBox (A(i))
+            MsgBox (CStr(ws.Cells(1, i).Value))
+        Next i
+    End If
+Next ws
+
+
+End Sub
