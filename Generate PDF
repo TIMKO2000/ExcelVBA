@@ -1,0 +1,25 @@
+Sub generatepdf()
+Dim pdfworkbook As Workbook
+Dim nws As Worksheet
+Dim dowload_path As String
+
+dowload_path = "C:\Users\Timothy_Ko\Desktop\"
+
+Workbooks.Open ("C:\Users\Timothy_Ko\Desktop\Equipment Master Result(Housing).xlsx")
+Set pdfworkbook = Application.ActiveWorkbook
+    For Each nws In pdfworkbook.Worksheets
+        'create pdf for each sheets
+        
+        Dim pdflastrow As Integer
+        pdflastrow = nws.Range("A" & Rows.Count).End(xlUp).Row
+        
+        nws.PageSetup.Orientation = xlLandscape
+        'set scale to 50%
+        nws.PageSetup.Zoom = 50
+        
+        nws.ExportAsFixedFormat _
+        xlTypePDF, _
+        dowload_path & nws.Name & ".pdf"
+    Next nws
+    
+End Sub
