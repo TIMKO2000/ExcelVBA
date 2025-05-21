@@ -1,0 +1,66 @@
+Sub convertPDFtoTextViaWord()
+    'convert PDF to txt file
+    Const filePath As String = "C:\Users\Timothy_Ko\Desktop\PDF_source\"
+    Dim file As String, filename As String
+    Dim myWord As Word.Application, myDoc As Word.Document
+    Set myWord = New Word.Application
+    file = Dir(filePath & "*.pdf")
+    myWord.DisplayAlerts = wdAlertsNone
+    Do While file <> ""
+        filename = Replace(file, "pdf", "txt")
+        Set myDoc = myWord.Documents.Open(filename:=filePath & file, ConfirmConversions:=False, Format:="PDF Files")
+        myDoc.SaveAs2 filePath & filename, FileFormat:=wdFormatText, Encoding:=1252, lineending:=wdCRLF
+        myDoc.Close False
+        file = Dir
+    Loop
+    Set myDoc = Nothing
+    Set myWord = Nothing
+   
+    
+    'for first to last txt file in the folder
+    Dim filetxt As Object
+    Dim fso As New FileSystemObject
+    Dim Folder As Object
+    Dim tstream As TextStream
+    Dim vline As Variant
+    Dim i As Integer
+    Dim filenametxt As String
+    Dim lines() As String
+    
+    Set fso = CreateObject("Scripting.FileSystemObject")
+    Set Folder = fso.GetFolder(filePath)
+    For Each filetxt In Folder.Files
+        If Right(filetxt.name, 4) = ".txt" Then
+            'open text file and place all data in row A
+            Const filename1 As String = "C:\Users\Timothy_Ko\Desktop\PDF_source\CO-EQ-001-10 (12-03-2024) RP BS EN ISO 7500.txt"
+                    
+            filenametxt = filePath + filetxt.name
+            
+            i = 2
+            
+            Set tstream = fso.OpenTextFile(filenametxt, ForReading, False)
+            'tstream.Codepage = 65001
+                    
+            Do While Not tstream.AtEndOfStream
+                vline = tstream.ReadLine
+                Debug.Print vline
+                lines = Split(vline, " ")
+                For Each Line In lines
+                    Range("A" & i).Value = Line
+                    i = i + 1
+                Next Line
+            Loop
+                    
+            Set tstream = Nothing
+            Set fso = Nothing
+
+        End If
+   Next filetxt
+   
+Dim name As String
+name = Right(Left(Range("A229").Value, 23), 14)
+lines = Split(Range("A134").Value, "/")
+name = name + " (" + Format((lines(1) + "/" + lines(0) + "/" + lines(2)), "dd-mm-yyyy") + ") "
+name = name + "RP"
+MsgBox (name)
+End Sub
