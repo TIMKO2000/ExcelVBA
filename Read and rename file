@@ -1,0 +1,119 @@
+Public address As String
+Sub browseFolder()
+        With Application.FileDialog(msoFileDialogFolderPicker)
+            If .Show = -1 Then
+                address = .SelectedItems(1) & "\"
+                Range("D2").Value = address
+            End If
+        End With
+End Sub
+Sub FetchNames()
+
+    Dim myPath As String
+    Dim myFile As String
+    Dim lastrow As Integer
+    Dim i As Integer
+    
+    myPath = address
+    myFile = Dir(myPath & "*.pdf*")
+    
+    r = 5
+    Do While myFile <> ""
+        Cells(r, 1).Value = myFile
+        r = r + 1
+        myFile = Dir
+    Loop
+    lastrow = Range("A" & Rows.Count).End(xlUp).Row
+    Debug.Print (lastrow)
+
+        'convert PDF to txt file
+        Dim filePath As String
+        filePath = Range("D2").Value
+        Dim file As String, filename As String
+        Dim myWord As Word.Application, myDoc As Word.Document
+        Set myWord = New Word.Application
+        file = Dir(filePath & "*.pdf")
+        myWord.DisplayAlerts = wdAlertsNone
+        Do While file <> ""
+            filename = Replace(file, "pdf", "txt")
+            Set myDoc = myWord.Documents.Open(filename:=filePath & file, ConfirmConversions:=False, Format:="PDF Files")
+            myDoc.SaveAs2 filePath & filename, FileFormat:=wdFormatText, Encoding:=1252, lineending:=wdCRLF
+            myDoc.Close False
+            file = Dir
+        Loop
+        Set myDoc = Nothing
+        Set myWord = Nothing
+
+    
+    For i = 5 To lastrow
+        'for first to last txt file in the folder
+        Dim filetxt As Object
+        Dim fso As New FileSystemObject
+        Dim Folder As Object
+        Dim tstream As TextStream
+        Dim vline As Variant
+        Dim j As Integer
+        Dim filenametxt As String
+        Dim lines() As String
+        
+        Set fso = CreateObject("Scripting.FileSystemObject")
+        Set Folder = fso.GetFolder(filePath)
+        
+        filenametxt = filePath + Replace(CStr(Range("A" & i).Value2), "pdf", "txt")
+        Set tstream = fso.OpenTextFile(filenametxt, ForReading, False)
+        'open text file and place all data in row A
+                        
+        Debug.Print (filenametxt)
+                
+        j = 2
+            
+        'tstream.Codepage = 65001
+
+        Do While Not tstream.AtEndOfStream
+            vline = tstream.ReadLine
+            lines = Split(vline, " ")
+            For Each Line In lines
+                Range("I" & j).Value = Line
+                j = j + 1
+            Next Line
+        Loop
+                        
+        Set tstream = Nothing
+        Set fso = Nothing
+    
+        Dim name As String
+        For j = 200 To 250
+            If Left(Range("I" & j).Value, 5) = "Plate" Then
+                name = Right(Left(Range("I" & j).Value, 23), 14)
+            End If
+        Next j
+        For j = 100 To 150
+            If Range("I" & j).Value2 = Range("I" & (j - 2)).Value2 And Range("I" & j).Value2 <> ":" Then
+                lines = Split(Range("I" & j).Value, "/")
+                name = name + " (" + Format((lines(1) + "/" + lines(0) + "/" + lines(2)), "dd-mm-yyyy") + ") "
+                Range("B" & i).Value2 = name + "RP.pdf"
+            End If
+        Next j
+    name = ""
+    Next i
+
+End Sub
+Sub RenameFiles()
+
+Dim myPath As String
+myPath = Range("D2").Value
+
+r = 5
+Do Until IsEmpty(Cells(r, 1)) And IsEmpty(Cells(r, 2))
+    Name myPath & Cells(r, 1).Value As myPath & Cells(r, 2).Value
+    r = r + 1
+Loop
+Dim lastrow As Integer
+lastrow = Range("A" & Rows.Count).End(xlUp).Row + 1
+
+Range("D2").Value = ""
+If lastrow > 5 Then
+    Range("A5:B" & lastrow).Value = ""
+End If
+End Sub
+
