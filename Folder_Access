@@ -1,0 +1,26 @@
+# get Folder Function
+Function GetFolder() As String
+    Dim fldr As FileDialog
+    Dim sItem As String
+    Set fldr = Application.FileDialog(msoFileDialogFolderPicker)
+    With fldr
+        .Title = "Select a Folder"
+        .AllowMultiSelect = False
+        .InitialFileName = Application.DefaultFilePath
+        If .Show <> -1 Then GoTo NextCode
+        sItem = .SelectedItems(1)
+    End With
+NextCode:
+    GetFolder = sItem
+    Set fldr = Nothing
+End Function
+
+#Inport and export path based on TextBox.value
+
+Private Sub Exportbutton_Click()
+    TextBox5.Value = GetFolder()
+End Sub
+
+Private Sub Inportbutton_Click()
+    TextBox4.Value = GetFolder()
+End Sub
