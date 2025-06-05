@@ -1,0 +1,109 @@
+Private Sub UserForm_Initialize()
+    Dim ComboBoxName As String
+    For i = 1 To 12
+        ComboBoxName = "ComboBox" & i
+        SSlastrow = Worksheets("Support Sheet").Cells(Rows.Count, i).End(xlUp).Row
+        For j = 2 To SSlastrow
+            With Me.Controls(ComboBoxName)
+                .AddItem Worksheets("Support Sheet").Cells(j, i).Value
+            End With
+        Next j
+    Next i
+End Sub
+Private Sub Summit_Click()
+    'Add item by chose
+    lastrow = Worksheets("Main Sheet").Range("A" & Rows.Count).End(xlUp).Row + 1
+    Range("A" & lastrow).Value = TextBox1.Value
+    Range("B" & lastrow).Value = TextBox2.Value
+    Range("C" & lastrow).Value = ComboBox1.Value
+    Range("D" & lastrow).Value = ComboBox2.Value
+    Range("E" & lastrow).Value = ComboBox3.Value
+    Range("F" & lastrow).Value = ComboBox4.Value
+    Range("G" & lastrow).Value = ComboBox5.Value
+    Range("H" & lastrow).Value = ComboBox6.Value
+    Range("I" & lastrow).Value = ComboBox7.Value
+    Range("J" & lastrow).Value = ComboBox8.Value
+    Range("K" & lastrow).Value = ComboBox9.Value
+    Range("L" & lastrow).Value = ComboBox10.Value
+    Range("M" & lastrow).Value = ComboBox11.Value
+    Range("N" & lastrow).Value = ComboBox12.Value
+    'include new option if needed
+    Dim Repeatflag As Boolean
+    For i = 3 To 14 'loop throught new data
+        Repeatflag = False
+        SSlastrow = Worksheets("Support Sheet").Cells(Rows.Count, i - 2).End(xlUp).Row
+        For j = 1 To SSlastrow
+            If Worksheets("Support Sheet").Cells(j, i - 2).Value = Worksheets("Main Sheet").Cells(lastrow, i).Value Then
+                Repeatflag = True
+            End If
+        Next j
+        'check flag to add item
+        If Repeatflag = False Then
+            Worksheets("Support Sheet").Cells(j, i - 2).Value = Worksheets("Main Sheet").Cells(lastrow, i).Value
+        End If
+    Next i
+End Sub
+Private Sub Sort_Click()
+    
+    'create new sheet name sort
+    Dim ws As Worksheet
+    Dim sheetName As String
+    sheetName = "Sorted Sheet"
+
+    ' Check if the sheet already exists
+    On Error Resume Next
+    Set ws = ThisWorkbook.Worksheets(sheetName)
+    On Error GoTo 0
+
+    ' If the sheet does not exist, create it at the end
+    If ws Is Nothing Then
+        Set ws = ThisWorkbook.Worksheets.Add(After:=ThisWorkbook.Worksheets(ThisWorkbook.Worksheets.Count))
+        ws.Name = sheetName
+    End If
+    'based on input copy needed line to new sheet
+    ThisWorkbook.Worksheets("Sorted Sheet").Cells.Clear 'clear list
+    'filter quatieries(Text)(Suppose one result)
+    lastrow = Worksheets("Main Sheet").Cells(Rows.Count, 1).End(xlUp).Row
+    sllastrow = Worksheets("Sorted Sheet").Cells(Rows.Count, 1).End(xlUp).Row
+    If TextBox1.Value <> "" Then
+        For i = 1 To lastrow
+            If Worksheets("Main Sheet").Cells(i, 1).Value = TextBox1.Value Then
+                Worksheets("Sorted Sheet").Range ("A" & sllastrow & ":" & "N" & sllastrow)
+            End If
+        Next i
+    End If
+    If TextBox2.Value <> "" Then
+        For i = 1 To lastrow
+            If Worksheets("Main Sheet").Cells(i, 1).Value = TextBox2.Value Then
+                Worksheets("Sorted Sheet").Range ("A" & sllastrow & ":" & "N" & sllastrow)
+            End If
+        Next i
+    End If
+    'ComboBox check (Muti result)
+    'copy whole page to new sheet
+    If TextBox1.Value = "" And TextBox2.Value = "" Then
+        ThisWorkbook.Worksheets("Main Sheet").Cells.Copy Destination:=ThisWorkbook.Worksheets("Sorted Sheet").Cells
+        Dim ComboBoxName As String
+        Dim filter As String
+        filter = ""
+        For i = 1 To 12
+            ComboBoxName = "ComboBox" & i
+            'get and filter does there are filter
+            With Me.Controls(ComboBoxName)
+                If .Value <> "" Then
+                    filter = .Value
+                Else
+                    GoTo nextloop
+                End If
+            End With
+            'filter into to new sheet position (i+2)
+            For j = 2 To sllastrow
+                If Worksheets("Sorted sheet").Cells(j, i + 2).Value <> filter Then
+                    Rows(j).Detele 'delete that row
+                    j = j - 1
+                End If
+            Next j
+nextloop:
+        Next i
+    End If
+End Sub
