@@ -7,7 +7,7 @@ Set nwb = Workbooks.Add
 Dim Path, Name As String
 
 'setpath and file name fro the new workbook
-Path = "C:\Users\Timothy_Ko\Desktop\"
+Path = "C:\Users\_\Desktop\"
 Name = "Monthly job Reminder"
 
 nwb.SaveAs filename:=Path + Name + ".xlsx"
@@ -184,57 +184,6 @@ For Each ws In cwb.Worksheets
     nws.Range("J4:K4").Merge
     nws.Range("J6:K6").Merge
     nws.Range("G6:I6").Merge
-    
-    Dim Lab_name As String
-    
-    Lab_name = ws.Name
-    If Lab_name = "CO" Then
-        Lab_name = "Concrete"
-    ElseIf Lab_name = "AG" Then
-        Lab_name = "Aggregate"
-    ElseIf Lab_name = "SO" Then
-        Lab_name = "Soil"
-    ElseIf Lab_name = "Lab D - SO" Then
-        Lab_name = "Lab D - Soil"
-    ElseIf Lab_name = "AS" Then
-        Lab_name = "Asphalt"
-    ElseIf Lab_name = "Special" Then
-        Lab_name = "Special"
-    ElseIf Lab_name = "ST" Then
-        Lab_name = "Steel"
-    ElseIf Lab_name = "RE" Then
-        Lab_name = "Calibration"
-    ElseIf Lab_name = "CH" Then
-        Lab_name = "Chemical"
-    ElseIf Lab_name = "ND" Then
-        Lab_name = "NDT"
-    ElseIf Lab_name = "AB" Then
-        Lab_name = "Asbestos"
-    ElseIf Lab_name = "HE" Then
-        Lab_name = "HEPA"
-    ElseIf Lab_name = "(3rs)SO & AG" Then
-        Lab_name = "(3 Runway) Soil & Aggregate"
-    ElseIf Lab_name = "(3rs)CO & CE" Then
-        Lab_name = "(3 Runway) Concrete & Cement"
-    ElseIf Lab_name = "(3rs)AS" Then
-        Lab_name = "(3 Runway)Asphalt"
-    ElseIf Lab_name = "(3rs)ST" Then
-        Lab_name = "(3 Runway)Steel"
-    ElseIf Lab_name = "(3rs)Oven Room" Then
-        Lab_name = "(3 Runway)Workshop & Oven Room"
-    End If
-    
-    
-    nws.Range("D1").Value = "The Lab(Asia) Ltd."
-    nws.Range("B3").Value = "EQUIPMENT CALIBRATION REMINDER"
-    nws.Range("B5").Value = "Department:" & Lab_name & " Laboratory"
-    nws.Range("B7").Value = "Equipment Details"
-    
-    nws.Range("I4").Value = "Issued By:"
-    nws.Range("J4").Value = "Valerie KOH"
-    
-    nws.Range("G6").Value = "Job Reminder Issued Date:"
-    nws.Range("J6").Value = Format(Now(), "mm/dd/yyyy")
     
     nws.Range("B7").Font.Underline = xlUnderlineStyleSingle
     
