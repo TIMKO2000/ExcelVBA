@@ -30,10 +30,10 @@ Next i
 'Sub Winhttptest()
 '
 'Dim http As New WinhttpRequest
-'dowload_path = "C:\Users\Timothy_Ko\Desktop\"
-'SGS_path = "https://sgs.sharepoint.com/sites/hk-it-hkfileserver/TLA_PDFCertificateRecord/Equipment Master Programme/"
+'dowload_path = "C:\Users\_\Desktop\"
+'path = "_"
 '
-'http.Open "GET", SGS_path & "Equipment Master Programme (Concrete).xlsx", True
+'http.Open "GET", path & "_", True
 'http.send
 'If http.Status = 200 Then
 '    With CreateObject("ADODB.STream")
@@ -46,7 +46,7 @@ Next i
 'End If
 'End Sub
 'Sub objhttptest()
-'    Const MYURL = "https://sgs.sharepoint.com/sites/hk-it-hkfileserver/TLA_PDFCertificateRecord/Equipment Master Programme/Equipment Master Programme (Concrete).xlsx"
+'    Const MYURL = "_"
 '    Set objHTTP = CreateObject("WinHttp.WinHttpRequest.5.1")
 '    objHTTP.Open "GET", MYURL, False
 '
@@ -77,7 +77,7 @@ Dim i As Integer
     
     Dim dowload_path As String
 
-    dowload_path = "C:\Users\Timothy_Ko\Desktop\"
+    dowload_path = "C:\Users\_\Desktop\"
 
     
     Dim MainBook, sourceBook As Workbook
@@ -87,23 +87,23 @@ Dim i As Integer
 
     Set MainBook = Application.ActiveWorkbook
     Dim pathtest(17) As String
-    pathtest(1) = dowload_path & "Equipment Master Programme (Concrete).xlsx"    'CO'
-    pathtest(2) = dowload_path & "Equipment Master Programme (Aggregate).xlsx"    'AG'
-    pathtest(3) = dowload_path & "Equipment Master Programme (Soil).xlsx"    'SO'
-    pathtest(4) = dowload_path & "Equipment Master Programme (Soil - Lab D).xlsx"   'LAB D-SO'
-    pathtest(5) = dowload_path & "Equipment Master Programme (Asphalt).xlsx"    'AS'
-    pathtest(6) = dowload_path & "Equipment Master Programme (Special).xlsx"    'Special'
-    pathtest(7) = dowload_path & "Equipment Master Programme (Steel).xlsx"    'ST'
-    pathtest(8) = dowload_path & "Equipment Master Programme (Reference Equipment).xlsx"    'RE'
-    pathtest(9) = dowload_path & "Equipment Master Programme (Chemical).xlsx"    'CH'
-    pathtest(10) = dowload_path & "Equipment Master Programme (NDT).xlsx"   'ND'
-    pathtest(11) = dowload_path & "Equipment Master Programme (Asbestos).xlsx"   'AB
-    pathtest(12) = dowload_path & "Equipment Master Programme (HEPA).xlsx"   'HE'
-    pathtest(13) = dowload_path & "Equipment Master Programme AA-EQ-100 to 199 (Airport - Soil and Aggregate).xlsx"       '(3rs)So & AG
-    pathtest(14) = dowload_path & "Equipment Master Programme AA-EQ-400 to 999 (Airport - Concrete and Cement).xlsx"       '(3rs)CO & CE
-    pathtest(15) = dowload_path & "Equipment Master Programme AA-EQ-300 to 399 (Airport - Asphalt).xlsx"            '(3rs)AS
-    pathtest(16) = dowload_path & "Equipment Master Programme AA-EQ-200 to 299 (Airport - Steel).xlsx"            '(3rs)ST
-    pathtest(17) = dowload_path & "Equipment Master Programme AA-EQ-001 to 099 (Airport - Workshop & Oven Room).xlsx"     '(3rs)Oven Room
+    pathtest(1) = dowload_path & "_"    
+    pathtest(2) = dowload_path & "_"    
+    pathtest(3) = dowload_path & "_"    
+    pathtest(4) = dowload_path & "_"   
+    pathtest(5) = dowload_path & "_"    
+    pathtest(6) = dowload_path & "_"   
+    pathtest(7) = dowload_path & "_"   
+    pathtest(8) = dowload_path & "_"   
+    pathtest(9) = dowload_path & "_"   
+    pathtest(10) = dowload_path & "_"   
+    pathtest(11) = dowload_path & "_"  
+    pathtest(12) = dowload_path & "_"   
+    pathtest(13) = dowload_path & "_"     
+    pathtest(14) = dowload_path & "_"     
+    pathtest(15) = dowload_path & "_"          
+    pathtest(16) = dowload_path & "_"          
+    pathtest(17) = dowload_path & "_"     
     
     For i = 1 To 17
         Workbooks.Open (pathtest(i))
@@ -111,7 +111,7 @@ Dim i As Integer
         Set sourceBook = ActiveWorkbook
         For Each Sheet In sourceBook.Worksheets
             'if there are more than one sheets at the sourcebook, please place the wanted one as the first worksheet and setup another or condition in the next line
-            If sourceBook.Name = "Equipment Master Programme (Asbestos).xlsx" Or sourceBook.Name = "Equipment Master Programme (Special).xlsx" Then
+            If sourceBook.Name = "_" Or sourceBook.Name = "_" Then
                 'loop count
                 If counter = 1 Then
                     counter = 2
@@ -121,40 +121,6 @@ Dim i As Integer
                 End If
             End If
             
-            If sourceBook.Name = "Equipment Master Programme (Concrete).xlsx" Then
-                Sheet.Name = "CO"
-            ElseIf sourceBook.Name = "Equipment Master Programme (Aggregate).xlsx" Then
-                Sheet.Name = "AG"
-            ElseIf sourceBook.Name = "Equipment Master Programme (Soil).xlsx" Then
-                Sheet.Name = "SO"
-            ElseIf sourceBook.Name = "Equipment Master Programme (Soil - Lab D).xlsx" Then
-                Sheet.Name = "LAB D-SO"
-            ElseIf sourceBook.Name = "Equipment Master Programme (Asphalt).xlsx" Then
-                Sheet.Name = "AS"
-            ElseIf sourceBook.Name = "Equipment Master Programme (Special).xlsx" Then
-                Sheet.Name = "Special"
-            ElseIf sourceBook.Name = "Equipment Master Programme (Steel).xlsx" Then
-                Sheet.Name = "ST"
-            ElseIf sourceBook.Name = "Equipment Master Programme (Reference Equipment).xlsx" Then
-                Sheet.Name = "RE"
-            ElseIf sourceBook.Name = "Equipment Master Programme (Chemical).xlsx" Then
-                Sheet.Name = "CH"
-            ElseIf sourceBook.Name = "Equipment Master Programme (NDT).xlsx" Then
-                Sheet.Name = "ND"
-            ElseIf sourceBook.Name = "Equipment Master Programme (Asbestos).xlsx" Then
-                Sheet.Name = "AB"
-            ElseIf sourceBook.Name = "Equipment Master Programme (HEPA).xlsx" Then
-                Sheet.Name = "HE"
-            ElseIf sourceBook.Name = "Equipment Master Programme AA-EQ-100 to 199 (Airport - Soil and Aggregate).xlsx" Then
-                Sheet.Name = "(3rs)So & AG"
-            ElseIf sourceBook.Name = "Equipment Master Programme AA-EQ-400 to 999 (Airport - Concrete and Cement).xlsx" Then
-                Sheet.Name = "(3rs)CO & CE"
-            ElseIf sourceBook.Name = "Equipment Master Programme AA-EQ-300 to 399 (Airport - Asphalt).xlsx" Then
-                Sheet.Name = "(3rs)AS"
-            ElseIf sourceBook.Name = "Equipment Master Programme AA-EQ-200 to 299 (Airport - Steel).xlsx" Then
-                Sheet.Name = "(3rs)ST"
-            ElseIf sourceBook.Name = "Equipment Master Programme AA-EQ-001 to 099 (Airport - Workshop & Oven Room).xlsx" Then
-                Sheet.Name = "(3rs)Oven Room"
             Else
                 MsgBox ("Please check is this file name is programmed")
                 GoTo Nextround
