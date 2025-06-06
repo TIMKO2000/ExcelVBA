@@ -3,9 +3,9 @@ Dim pdfworkbook As Workbook
 Dim nws As Worksheet
 Dim dowload_path As String
 
-dowload_path = "C:\Users\Timothy_Ko\Desktop\"
+dowload_path = "C:\Users\_\Desktop\"
 
-Workbooks.Open ("C:\Users\Timothy_Ko\Desktop\Equipment Master Result(Housing).xlsx")
+Workbooks.Open ("C:\Users\_\Desktop\")
 Set pdfworkbook = Application.ActiveWorkbook
     For Each nws In pdfworkbook.Worksheets
         'create pdf for each sheets
