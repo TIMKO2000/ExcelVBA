@@ -8,13 +8,13 @@ Sub workbook_open()
     Dim deadline As Date
     deadline = InputBox("Please Enter the month(mm/yyyy):")
     
-    dowload_path = "C:\Users\Timothy_Ko\Desktop\"
+    dowload_path = "C:\Users\_\Desktop\"
     Image_name = "Company_icon.png"
     
     Set MainBook = Application.ActiveWorkbook
     
     Dim pathtest As String
-    pathtest = dowload_path & "Equipment Master Programme (Housing).xlsx"
+    pathtest = dowload_path & "_"
     Workbooks.Open (pathtest)
     Set sourceBook = ActiveWorkbook
     
@@ -159,7 +159,6 @@ For Each ws In cwb.Worksheets
     nws.Range("W:W").Insert
     
     nws.Range("J1").Value = nws.Range("I1").Value
-    nws.Range("K1").Value = "HOKLAS Report(Y/N)"
     nws.Range("T1").Value = nws.Range("S1").Value
     nws.Range("L1").Value = nws.Range("O1").Value
     nws.Range("W1").Value = nws.Range("V1").Value
@@ -230,19 +229,6 @@ For Each ws In cwb.Worksheets
     nws.Range("J6:L6").Merge
     
     Dim Lab_name As String
-    
-    Lab_name = ws.Name
-    
-    nws.Range("B1").Value = "The Lab(Asia) Ltd."
-    nws.Range("A3").Value = "EQUIPMENT CALIBRATION REMINDER"
-    nws.Range("A5").Value = "Department:Housing " & Lab_name
-    nws.Range("A7").Value = "Equipment Details"
-    
-    nws.Range("L4").Value = "Issued By:"
-    nws.Range("M4").Value = "Valerie KOH"
-    
-    nws.Range("J6").Value = "Job Reminder Issued Date:"
-    nws.Range("M6").Value = Format(Now(), "mm/dd/yyyy")
     
     nws.Range("A7").Font.Underline = xlUnderlineStyleSingle
     
