@@ -32,7 +32,7 @@ Sub convertPDFtoTextViaWord()
     For Each filetxt In Folder.Files
         If Right(filetxt.name, 4) = ".txt" Then
             'open text file and place all data in row A
-            Const filename1 As String = "C:\Users\Timothy_Ko\Desktop\PDF_source\CO-EQ-001-10 (12-03-2024) RP BS EN ISO 7500.txt"
+            Const filename1 As String = "C:\Users\_\Desktop\"
                     
             filenametxt = filePath + filetxt.name
             
