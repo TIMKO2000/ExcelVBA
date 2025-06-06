@@ -94,7 +94,7 @@ Private Sub Summit_button_Click()
     Next j
     
     'Combine as one sheet
-    Sheets.Add(Before:=Sheets("Sheet1")).Name = "CSV_Combine"
+    Sheets.Add(Before:=Sheets("Sheet1")).Name = "_"
     Application.DisplayAlerts = False
     Sheets("Sheet1").Delete
     Application.DisplayAlerts = True
@@ -102,11 +102,11 @@ Private Sub Summit_button_Click()
     Dim lastrow As Integer
     
     For Each sheet In mainbook.Worksheets
-        lastrow = Sheets("CSV_Combine").Range("A" & Rows.Count).End(xlUp).Row
-        If sheet.Name = "CSV_Combine" Then
+        lastrow = Sheets("_").Range("A" & Rows.Count).End(xlUp).Row
+        If sheet.Name = "_" Then
             'setup top row
-            Sheets("CSV(1)").Range("A1:BT1").Copy
-            Sheets("CSV_Combine").Range("A1:BT1").PasteSpecial
+            Sheets("_").Range("A1:BT1").Copy
+            Sheets("_").Range("A1:BT1").PasteSpecial
         Else
             'copydata
             
@@ -114,7 +114,7 @@ Private Sub Summit_button_Click()
         End If
     Next sheet
     
-    Sheets("CSV_Combine").Range("A" & lastrow + 1 & ":BT" & lastrow + 3).AutoFit
+    Sheets("_").Range("A" & lastrow + 1 & ":BT" & lastrow + 3).AutoFit
     'export as .csv
     Dim Path As String
     Dim ws As Worksheet
@@ -122,10 +122,10 @@ Private Sub Summit_button_Click()
     Application.ScreenUpdating = False
     Path = destant_path
     For Each ws In Worksheets
-        If ws.Name = "CSV_Combine" Then
+        If ws.Name = "_" Then
             ws.Copy
             ActiveWorkbook.SaveAs Filename:=Path _
-            & "<3 chars LAB ID>" & "_AGGREGATE_V110_" & CStr(Format(Date, "yyyymmdd")) & ".csv", FileFormat:=xlCSVUTF8, _
+            & "_" & "_" & CStr(Format(Date, "yyyymmdd")) & ".csv", FileFormat:=xlCSVUTF8, _
             CreateBackup:=True
             ActiveWorkbook.Close False
         End If
